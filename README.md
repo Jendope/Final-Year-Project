@@ -1,6 +1,8 @@
 # Final-Year-Project
 
-# Student List
+## FraudSim: Immersive Fraud Awareness Through RAG-Guided LLM Simulation
+
+## Student List
 
 | No. | Name                  | Student ID | E-Mail                       |
 |-----|-----------------------|------------|------------------------------|

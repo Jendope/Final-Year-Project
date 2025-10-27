@@ -1,6 +1,6 @@
 # Final-Year-Project
 
-## FraudSim: Immersive Fraud Awareness Through RAG-Guided LLM Simulation
+## Fraud Detection Using Large Language Models and Retrieval-Augmented Generation
 
 ## Student List
 

@@ -8,9 +8,8 @@
 | No. | Name              | Student ID | Email                        |
 |-----|-------------------|------------|------------------------------|
 | 1   | Tan James Anthroi | 240350922  | 240350922@stu.vtc.edu.hk     |
-| 2   | Aqsa Ahmed        | 240044574  | 240044574@stu.vtc.edu.hk     |
-| 3   | Lin Yueying       | 240444846  | 240444846@stu.vtc.edu.hk     |
-| 4   | Tan Xiuhao        | 240253372  | 240253372@stu.vtc.edu.hk     |
+| 2   | Lin Yueying       | 240444846  | 240444846@stu.vtc.edu.hk     |
+| 3   | Tan Xiuhao        | 240253372  | 240253372@stu.vtc.edu.hk     |
 
 ---
 
@@ -38,7 +37,7 @@ The platform emphasizes:
 ## Technical Approach
 - **Architecture**: Web-based platform with a React frontend, Node.js backend, and MongoDB for user data.  
 - **AI Pipeline**: RAG + LLM pipeline orchestrated with LangChain; embeddings generated using Sentence-BERT or OpenAI embeddings.  
-- **Knowledge Base**: Fraud cases scraped from Reddit, HK01, Yahoo, SCMP, and HKMA, vectorized and stored in ChromaDB for semantic retrieval.  
+- **Knowledge Base**: Fraud cases scraped from HK01, SCMP, and HKMA, vectorized and stored in ChromaDB for semantic retrieval.  
 - **Algorithms**:  
   - Named Entity Recognition (NER) to detect fraud-related entities  
   - RAG grounding to provide context from real fraud cases  

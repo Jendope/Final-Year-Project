@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>预防网络诈骗检测</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "微软雅黑", -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* 隐私政策底部提示条 - 新增样式 */
+    #privacyBar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(30,26,92,0.95);
+        backdrop-filter: blur(10px);
+        padding: 15px 16px;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+        z-index: 1001; /* 确保在底部导航之上 */
+        border-top: 1px solid rgba(255,255,255,0.2);
+    }
+
+    #privacyBar.show {
+        transform: translateY(0);
+    }
+
+    .privacy-content {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        color: #fff;
+    }
+
+    .privacy-content p {
+        font-size: 15px;
+        line-height: 1.6;
+        color: rgba(255,255,255,0.9);
+    }
+
+    .privacy-content a {
+        color: #2d8cf0;
+        text-decoration: none;
+    }
+
+    .privacy-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .privacy-btn {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    #acceptBtn {
+        background: linear-gradient(135deg, #2d8cf0 0%, #1e76d8 100%);
+        color: white;
+    }
+
+    #rejectBtn {
+        background: rgba(255,255,255,0.15);
+        color: #fff;
+    }
+
+    /* 启动页 */
+    .splash-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #2d8cf0 0%, #1e76d8 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        z-index: 999;
+        transition: opacity 0.8s ease-out;
+    }
+    .splash-logo {
+        font-size: 52px;
+        margin-bottom: 22px;
+    }
+    .splash-text {
+        font-size: 22px;
+        font-weight: 500;
+        letter-spacing: 1px;
+    }
+
+    /* 主体样式 */
+    body {
+        background: linear-gradient(180deg, #3a2b8e 0%, #1e1a5c 100%);
+        font-size: 16px;
+        color: #fff;
+        line-height: 1.6;
+        padding-bottom: 80px;
+        overflow-x: hidden;
+    }
+
+    /* 顶部导航栏 */
+    .top-bar {
+        background: linear-gradient(135deg, rgba(45,140,240,0.8) 0%, rgba(30,118,216,0.8) 100%);
+        color: white;
+        padding: 20px 16px 12px;
+        font-size: 19px;
+        font-weight: 600;
+        text-align: center;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        backdrop-filter: blur(10px);
+    }
+
+    /* 主容器 */
+    .container {
+        max-width: 580px;
+        margin: 20px auto;
+        padding: 0 16px;
+    }
+
+    /* 风险表情指示器 */
+    .risk-indicator {
+        text-align: center;
+        margin: 20px 0;
+    }
+    .risk-emoji {
+        font-size: 64px;
+        margin-bottom: 12px;
+        transition: transform 0.5s ease;
+    }
+    .risk-emoji:hover {
+        transform: scale(1.1);
+    }
+    .risk-text {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    .risk-value {
+        font-size: 28px;
+        font-weight: bold;
+        padding: 12px 24px;
+        border-radius: 16px;
+        display: inline-block;
+        transition: all 0.5s ease;
+        min-width: 120px;
+    }
+
+    /* 卡片样式 */
+    .card {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(15px);
+        border-radius: 22px;
+        padding: 38px 26px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        margin-bottom: 26px;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    .card:hover {
+        box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        transform: translateY(-2px);
+    }
+    .card h2 {
+        font-size: 25px;
+        margin-bottom: 32px;
+        color: #fff;
+        position: relative;
+        display: inline-block;
+        letter-spacing: 0.5px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .card h2::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 10%;
+        width: 80%;
+        height: 3px;
+        background: linear-gradient(90deg, #2d8cf0, #1e76d8);
+        border-radius: 3px;
+    }
+
+    /* 按钮样式 */
+    .primary-btn {
+        width: 100%;
+        padding: 22px;
+        font-size: 19px;
+        font-weight: 600;
+        background: linear-gradient(135deg, #2d8cf0 0%, #1e76d8 100%);
+        color: white;
+        border: none;
+        border-radius: 18px;
+        margin-bottom: 26px;
+        cursor: pointer;
+        box-shadow: 0 8px 20px rgba(45,140,240,0.3);
+        transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+        letter-spacing: 0.5px;
+    }
+    .primary-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 28px rgba(45,140,240,0.4);
+    }
+    .primary-btn:active {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(45,140,240,0.3);
+    }
+
+    /* 结果显示 */
+    #result, #textResult {
+        font-size: 28px;
+        font-weight: bold;
+        color: #fff;
+        margin-top: 22px;
+        padding: 20px;
+        border-radius: 14px;
+        background-color: rgba(230,67,64,0.2);
+        box-shadow: 0 6px 16px rgba(230,67,64,0.2);
+        transition: all 0.4s ease;
+        letter-spacing: 0.5px;
+    }
+
+    /* 文本输入框 */
+    #textInput {
+        width: 100%;
+        height: 170px;
+        padding: 18px;
+        font-size: 18px;
+        border: 2px solid rgba(255,255,255,0.2);
+        border-radius: 18px;
+        margin-bottom: 26px;
+        resize: none;
+        transition: all 0.3s ease;
+        background-color: rgba(255,255,255,0.1);
+        color: #fff;
+    }
+    #textInput::placeholder {
+        color: rgba(255,255,255,0.6);
+    }
+    #textInput:focus {
+        outline: none;
+        border-color: #2d8cf0;
+        box-shadow: 0 0 0 5px rgba(45,140,240,0.2);
+        background-color: rgba(255,255,255,0.15);
+    }
+
+    /* 案例页面 */
+    .case-page {
+        display: none;
+        padding: 16px;
+        animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tab 导航 */
+    .tabs {
+        display: flex;
+        margin-bottom: 20px;
+        border-radius: 16px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15);
+        overflow: hidden;
+    }
+    .tab {
+        flex: 1;
+        text-align: center;
+        padding: 14px 8px;
+        font-size: 16px;
+        font-weight: 600;
+        color: rgba(255,255,255,0.7);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .tab.active {
+        background: rgba(45,140,240,0.3);
+        color: #fff;
+        border-bottom: 3px solid #2d8cf0;
+    }
+    .tab:hover {
+        background: rgba(255,255,255,0.1);
+    }
+
+    /* 案例内容容器 */
+    .tab-content {
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+    }
+
+    /* 案例列表 */
+    .case-list {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+    .case-item {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(15px);
+        border-radius: 18px;
+        padding: 26px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+        border-left: 4px solid #2d8cf0;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    .case-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .case-title {
+        font-size: 19px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        letter-spacing: 0.5px;
+    }
+    .case-title::before {
+        content: '⚠️';
+        font-size: 20px;
+    }
+    .case-content {
+        font-size: 16px;
+        color: rgba(255,255,255,0.9);
+        line-height: 1.7;
+    }
+
+    /* 香港01最新案例区域 */
+    .hk01-case-header {
+        font-size: 20px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .hk01-case-header::before {
+        content: '📰';
+        font-size: 22px;
+    }
+    .hk01-case-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .hk01-case-item {
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid rgba(255,255,255,0.15);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    .hk01-case-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 10px;
+    }
+    .hk01-case-date {
+        font-size: 14px;
+        color: rgba(255,255,255,0.7);
+        margin-bottom: 12px;
+    }
+    .hk01-case-desc {
+        font-size: 15px;
+        color: rgba(255,255,255,0.9);
+        line-height: 1.6;
+    }
+    .sync-btn {
+        width: 100%;
+        padding: 16px;
+        font-size: 17px;
+        font-weight: 600;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        color: white;
+        border: none;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        cursor: pointer;
+        box-shadow: 0 6px 16px rgba(255,107,107,0.3);
+        transition: all 0.3s ease;
+    }
+    .sync-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 24px rgba(255,107,107,0.4);
+    }
+
+    /* 趋势图表 */
+    .trend-section {
+        margin-top: 30px;
+    }
+    .trend-header {
+        font-size: 20px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .trend-header::before {
+        content: '📈';
+        font-size: 22px;
+    }
+    .chart-container {
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid rgba(255,255,255,0.15);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        height: 300px;
+    }
+
+    /* 底部导航栏 */
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(30,26,92,0.9);
+        backdrop-filter: blur(10px);
+        display: flex;
+        justify-content: space-around;
+        padding: 16px 0 12px;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+        z-index: 99;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .nav-tab {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        font-size: 14px;
+        font-weight: 600;
+        color: rgba(255,255,255,0.6);
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding: 6px 12px;
+        border-radius: 22px;
+    }
+    .nav-tab.active {
+        color: #fff;
+        background-color: rgba(45,140,240,0.2);
+    }
+
+    /* 弹窗 */
+    .alert-box {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 28px;
+        max-width: 82%;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+    .alert-box.show {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    .alert-title {
+        font-size: 19px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 14px;
+        text-align: center;
+        letter-spacing: 0.5px;
+    }
+    .alert-content {
+        font-size: 16px;
+        color: #666;
+        text-align: center;
+        margin-bottom: 22px;
+    }
+    .alert-btn {
+        width: 100%;
+        padding: 14px;
+        font-size: 17px;
+        font-weight: 500;
+        background: linear-gradient(135deg, #2d8cf0 0%, #1e76d8 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(45,140,240,0.2);
+    }
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    .overlay.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* 加载动画 */
+    .loader {
+        text-align: center;
+        padding: 20px;
+        color: rgba(255,255,255,0.7);
+    }
+    .loader::after {
+        content: '';
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+        margin-left: 10px;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* 横屏适配 */
+    @media (orientation: landscape) {
+        .card {
+            padding: 26px 20px;
+        }
+        #textInput {
+            height: 120px;
+        }
+    }
+
+    /* 隐私政策页面样式补充 */
+    .privacy-page {
+        display: none;
+        padding: 16px;
+        animation: fadeIn 0.5s ease;
+    }
+    .privacy-container {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(15px);
+        border-radius: 22px;
+        padding: 30px 26px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    .privacy-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 24px;
+        text-align: center;
+        letter-spacing: 0.5px;
+    }
+    .privacy-subtitle {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2d8cf0;
+        margin: 20px 0 10px;
+    }
+    .privacy-content {
+        font-size: 16px;
+        color: rgba(255,255,255,0.9);
+        line-height: 1.7;
+        margin-bottom: 10px;
+    }
+    .privacy-note {
+        margin-top: 24px;
+        padding: 16px;
+        background: rgba(45,140,240,0.1);
+        border-radius: 12px;
+        font-size: 15px;
+        color: rgba(255,255,255,0.9);
+        line-height: 1.6;
+    }
+</style>
+</head>
+<body>
+    <!-- 隐私政策底部提示条 - 新增 -->
+    <div id="privacyBar">
+        <div class="privacy-content">
+            <p>本网站为学术研究项目，使用前请阅读<a onclick="showPage('privacy-page')">隐私数据获取条例</a>。是否同意？</p>
+            <div class="privacy-buttons">
+                <button class="privacy-btn" id="rejectBtn">不同意</button>
+                <button class="privacy-btn" id="acceptBtn">同意</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 启动页 -->
+    <div class="splash-screen" id="splash">
+        <div class="splash-logo">🛡️</div>
+        <div class="splash-text">防网络诈骗检测</div>
+    </div>
+
+    <!-- 顶部导航栏 -->
+    <div class="top-bar">防网络诈骗检测</div>
+
+    <!-- 主检测页面 -->
+    <div class="container" id="home-page">
+        <!-- 风险表情指示器 -->
+        <div class="risk-indicator">
+            <div class="risk-emoji" id="riskEmoji">😊</div>
+            <div class="risk-text" id="riskText">安全</div>
+            <div class="risk-value" id="riskValue">0/5</div>
+        </div>
+
+        <div class="card">
+            <h2>手机安全检测</h2>
+            <button class="primary-btn" onclick="checkScam()">
+                <span>点击检测诈骗风险</span>
+            </button>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <!-- 文本检测页面 -->
+    <div class="container" id="text-page" style="display:none;">
+        <div class="card">
+            <h2>粘贴不明信息检测</h2>
+            <textarea id="textInput" placeholder="请粘贴短信、微信、链接、聊天内容等，我们会帮您检测风险..."></textarea>
+            <button class="primary-btn" onclick="checkTextScam()">
+                <span>检测文本风险</span>
+            </button>
+            <div id="textResult"></div>
+        </div>
+    </div>
+
+    <!-- 案例页面（Tab 版） -->
+    <div class="case-page" id="case-page">
+        <div class="container">
+            <!-- Tab 导航 -->
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('common')">常见诈骗案例</div>
+                <div class="tab" onclick="switchTab('hk01')">香港01最新案例</div>
+            </div>
+
+            <!-- 常见案例内容 -->
+            <div class="tab-content active" id="common-content">
+                <div class="case-list">
+                    <div class="case-item">
+                        <div class="case-title">案例1：冒充客服退款诈骗</div>
+                        <div class="case-content">
+                            骗子冒充购物平台、快递客服，通过电话、短信告知你“商品质量问题”“订单异常”“包裹丢失”，以“退款”“理赔”为诱饵，诱导你提供银行卡号、验证码，或点击陌生链接跳转至钓鱼网站，最终盗刷账户资金。
+                        </div>
+                    </div>
+                    <div class="case-item">
+                        <div class="case-title">案例2：虚假中奖诈骗</div>
+                        <div class="case-content">
+                            通过短信、微信、网页弹窗或短视频评论告知你“中了大奖”，要求先缴纳“手续费”“税费”“公证费”才能领奖，一旦转账后便失联。
+                        </div>
+                    </div>
+                    <div class="case-item">
+                        <div class="case-title">案例3：冒充亲友借钱诈骗</div>
+                        <div class="case-content">
+                            骗子盗走亲友微信、QQ账号，或使用AI变声、模糊视频冒充亲友，编造“生病住院急需手术费”等理由，催促你尽快转账。
+                        </div>
+                    </div>
+                    <div class="case-item">
+                        <div class="case-title">案例4：投资理财诈骗</div>
+                        <div class="case-content">
+                            以“高收益、低风险”为噱头，拉你加入“投资指导群”，让你在其虚假App上充值，初期返利吸引加大投入，最终无法提现。
+                        </div>
+                    </div>
+                    <div class="case-item">
+                        <div class="case-title">案例5：刷单返利诈骗</div>
+                        <div class="case-content">
+                            声称“简单刷单，日入数百”，初期小额返利，待你投入大额资金后拒绝提现，甚至要求继续转账。
+                        </div>
+                    </div>
+                    <div class="case-item">
+                        <div class="case-title">案例6：贷款注销校园贷诈骗</div>
+                        <div class="case-content">
+                            骗子冒充银行工作人员，称你“有未结清贷款”“征信有问题”，诱导你将资金转入所谓“安全账户”。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 香港01最新案例内容 -->
+            <div class="tab-content" id="hk01-content">
+                <div class="hk01-case-header">香港01最新诈骗案例</div>
+
+                <div id="hk01Loader" class="loader">正在同步最新案例...</div>
+
+                <div class="hk01-case-list" id="hk01CaseList" style="display:none;">
+                    <!-- 动态加载 -->
+                </div>
+
+                <!-- 趋势图表 -->
+                <div class="trend-section">
+                    <div class="trend-header">最新诈骗趋势（过去7天）</div>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 隐私政策页面 -->
+    <div class="privacy-page" id="privacy-page">
+        <div class="container">
+            <div class="privacy-container">
+                <div class="privacy-title">隐私数据获取条例（毕业课题专用）</div>
+                
+                <div class="privacy-subtitle">1. 一般条款</div>
+                <div class="privacy-content">
+                    1.1 「防网络诈骗检测」网页（「本网页」）为香港高等科技教育学院（HKIIT）数据科学与人工智能专业毕业课题项目，仅用于学术研究及防诈骗技术验证。本项目严格遵守《个人资料（私隐）条例》及学校伦理审查委员会的相关规定。
+                </div>
+                <div class="privacy-content">
+                    1.2 本隐私条例详细说明我们处理个人资料的政策及方法。通过访问本网页及提供个人资料，表示你已阅读并同意本条例的全部内容，并自愿参与本课题研究。
+                </div>
+
+                <div class="privacy-subtitle">2. 个人资料的收集及使用</div>
+                <div class="privacy-content">
+                    2.1 为完成课题研究，我们将收集以下几类数据：
+                    <ul style="margin: 10px 0 10px 20px; list-style-type: disc;">
+                        <li>用户自愿粘贴的文本内容（短信、微信、链接等），用于训练及验证诈骗检测模型</li>
+                        <li>模拟检测结果数据（诈骗指数、风险等级），用于分析模型性能</li>
+                        <li>非识别性设备信息（设备类型、操作系统版本），用于优化跨平台兼容性</li>
+                        <li>使用行为数据（功能使用频率、页面访问路径），用于评估用户体验</li>
+                    </ul>
+                </div>
+                <div class="privacy-content">
+                    2.2 所有收集的数据仅用于以下学术研究目的：
+                    <ul style="margin: 10px 0 10px 20px; list-style-type: disc;">
+                        <li>训练及优化诈骗检测算法模型</li>
+                        <li>分析不同诈骗类型的特征及传播模式</li>
+                        <li>验证防诈骗技术的有效性及用户接受度</li>
+                        <li>撰写毕业论文及学术论文</li>
+                    </ul>
+                </div>
+
+                <div class="privacy-subtitle">3. 个人资料的保安</div>
+                <div class="privacy-content">
+                    3.1 我们采用多层安全措施保护数据安全：所有数据将加密存储在学校专用服务器中，仅课题研究人员有权限访问；定期进行数据备份及安全审计；研究结束后将对所有原始数据进行匿名化处理。
+                </div>
+
+                <div class="privacy-subtitle">4. 个人资料的分享及转移</div>
+                <div class="privacy-content">
+                    4.1 我们不会向任何第三方分享或转移可识别个人身份的数据。仅在以下情况下可能披露匿名化的统计数据：
+                    <ul style="margin: 10px 0 10px 20px; list-style-type: disc;">
+                        <li>在学术论文、会议报告中用于展示研究成果</li>
+                        <li>接受学校伦理审查委员会的审计</li>
+                        <li>根据法律要求或政府部门的合法指令</li>
+                    </ul>
+                </div>
+
+                <div class="privacy-subtitle">5. 保留个人资料</div>
+                <div class="privacy-content">
+                    5.1 所有数据将保留至课题研究结束后12个月，逾期将对原始数据进行不可逆删除，仅保留匿名化的研究结果用于学术存档。
+                </div>
+
+                <div class="privacy-subtitle">6. 用户权利</div>
+                <div class="privacy-content">
+                    6.1 你有权随时撤回参与本课题的同意，并要求删除与你相关的所有数据。撤回同意不会影响课题研究的继续进行，也无需承担任何责任。
+                </div>
+
+                <div class="privacy-subtitle">7. 课题负责人及联系方式</div>
+                <div class="privacy-content">
+                    7.1 本课题负责人为：Erin（香港高等科技教育学院数据科学与人工智能专业学生）
+                </div>
+                <div class="privacy-content">
+                    7.2 如有任何疑问或建议，请通过以下方式联系：
+                    <br>邮箱：erin@hkiit.edu.hk
+                    <br>电话：+852 XXXX XXXX
+                </div>
+
+                <div class="privacy-note">
+                    🔍 重要提示：本网页仅用于学术研究，所有数据收集均已获得学校伦理审查委员会的批准。你的参与对本课题的成功至关重要，感谢你的支持与贡献！
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav">
+        <button class="nav-tab active" onclick="showPage('home-page')">
+            <div>安全检测</div>
+        </button>
+        <button class="nav-tab" onclick="showPage('text-page')">
+            <div>文本检测</div>
+        </button>
+        <button class="nav-tab" onclick="showPage('case-page')">
+            <div>诈骗案例</div>
+        </button>
+    </div>
+
+    <!-- 弹窗 -->
+    <div class="overlay" id="overlay"></div>
+    <div class="alert-box" id="alertBox">
+        <div class="alert-title">检测提示</div>
+        <div class="alert-content">正在安全检测中...（数据将用于学术研究）</div>
+        <button class="alert-btn" onclick="hideAlert()">确定</button>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// 隐私政策提示条逻辑 - 新增
+window.addEventListener('DOMContentLoaded', function() {
+    // 检查是否已经同意隐私政策
+    if (localStorage.getItem('privacyAccepted') !== 'yes') {
+        document.getElementById('privacyBar').classList.add('show');
+    }
+
+    // 同意隐私政策
+    document.getElementById('acceptBtn').onclick = function() {
+        localStorage.setItem('privacyAccepted', 'yes');
+        document.getElementById('privacyBar').classList.remove('show');
+    };
+
+    // 不同意隐私政策
+    document.getElementById('rejectBtn').onclick = function() {
+        document.getElementById('privacyBar').classList.remove('show');
+    };
+});
+
+// 启动页
+window.addEventListener('load', function() {
+    setTimeout(function() {
+        document.getElementById('splash').style.opacity = '0';
+        setTimeout(function() {
+            document.getElementById('splash').style.display = 'none';
+        }, 800);
+    }, 1500);
+
+    // 页面加载后自动同步香港01案例
+    syncHK01Cases();
+
+    // 每 1 小时自动同步一次
+    setInterval(syncHK01Cases, 3600000);
+});
+
+// 切换页面
+function showPage(pageId) {
+    // 隐藏所有页面
+    document.getElementById('home-page').style.display = 'none';
+    document.getElementById('text-page').style.display = 'none';
+    document.getElementById('case-page').style.display = 'none';
+    document.getElementById('privacy-page').style.display = 'none';
+
+    // 移除所有导航栏激活状态
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+
+    // 显示目标页面并激活对应导航
+    document.getElementById(pageId).style.display = 'block';
+    if (event && event.target) {
+        event.target.classList.add('active');
+    } else {
+        // 处理隐私政策链接点击的情况
+        const navTabs = document.querySelectorAll('.nav-tab');
+        navTabs.forEach(tab => {
+            if (tab.textContent.includes('隐私条例') && pageId === 'privacy-page') {
+                tab.classList.add('active');
+            }
+        });
+    }
+    window.scrollTo(0, 0);
+}
+
+// 切换案例 Tab
+function switchTab(tabName) {
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event.target.classList.add('active');
+
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById(tabName + '-content').classList.add('active');
+}
+
+// 弹窗
+function showAlert() {
+    document.getElementById('overlay').classList.add('show');
+    document.getElementById('alertBox').classList.add('show');
+}
+function hideAlert() {
+    document.getElementById('overlay').classList.remove('show');
+    document.getElementById('alertBox').classList.remove('show');
+}
+
+// 更新风险指示器
+function updateRiskIndicator(index) {
+    const emoji = document.getElementById('riskEmoji');
+    const text = document.getElementById('riskText');
+    const value = document.getElementById('riskValue');
+    
+    if (index === 0) {
+        emoji.innerText = '😊';
+        text.innerText = '安全';
+        value.style.backgroundColor = 'rgba(0,180,42,0.3)';
+        value.style.color = '#00b42a';
+    } else if (index <= 2) {
+        emoji.innerText = '😐';
+        text.innerText = '低风险';
+        value.style.backgroundColor = 'rgba(255,125,0,0.3)';
+        value.style.color = '#ff7d00';
+    } else {
+        emoji.innerText = '😡';
+        text.innerText = '高风险';
+        value.style.backgroundColor = 'rgba(230,67,64,0.3)';
+        value.style.color = '#e64340';
+    }
+    value.innerText = `${index}/5`;
+}
+
+// 手机检测
+function checkScam() {
+    showAlert();
+    setTimeout(function() {
+        hideAlert();
+        let scamIndex = Math.floor(Math.random() * 6);
+        let resultElem = document.getElementById('result');
+        resultElem.innerText = `诈骗指数：${scamIndex}/5`;
+        updateRiskIndicator(scamIndex);
+
+        if (scamIndex === 0) {
+            resultElem.style.color = '#00b42a';
+            resultElem.style.backgroundColor = 'rgba(0,180,42,0.2)';
+        } else if (scamIndex <= 2) {
+            resultElem.style.color = '#ff7d00';
+            resultElem.style.backgroundColor = 'rgba(255,125,0,0.2)';
+        } else {
+            resultElem.style.color = '#e64340';
+            resultElem.style.backgroundColor = 'rgba(230,67,64,0.2)';
+        }
+    }, 1500);
+}
+
+// 文本检测
+function checkTextScam() {
+    let text = document.getElementById('textInput').value;
+    if (!text) {
+        alert("请先粘贴需要检测的内容");
+        return;
+    }
+
+    showAlert();
+    setTimeout(function() {
+        hideAlert();
+        let scamIndex = Math.floor(Math.random() * 6);
+        let resultElem = document.getElementById('textResult');
+        resultElem.innerText = `诈骗指数：${scamIndex}/5`;
+        updateRiskIndicator(scamIndex);
+
+        if (scamIndex === 0) {
+            resultElem.style.color = '#00b42a';
+            resultElem.style.backgroundColor = 'rgba(0,180,42,0.2)';
+        } else if (scamIndex <= 2) {
+            resultElem.style.color = '#ff7d00';
+            resultElem.style.backgroundColor = 'rgba(255,125,0,0.2)';
+        } else {
+            resultElem.style.color = '#e64340';
+            resultElem.style.backgroundColor = 'rgba(230,67,64,0.2)';
+        }
+    }, 1500);
+}
+
+// 同步香港01最新诈骗案例
+function syncHK01Cases() {
+    const loader = document.getElementById('hk01Loader');
+    const list = document.getElementById('hk01CaseList');
+
+    loader.style.display = 'block';
+    list.style.display = 'none';
+
+    // 模拟 API 请求
+    setTimeout(function() {
+        const mockCases = [
+            {
+                title: "【诈骗警示】冒充银行职员要求转账至「安全账户」",
+                date: "2025-12-18",
+                desc: "近日多名市民接获自称银行职员的来电，指其账户出现异常活动，要求提供验证码或转账至所谓「安全账户」。警方提醒市民切勿透露个人资料，如有怀疑应直接致电银行官方热线查询。"
+            },
+            {
+                title: "【新型骗局】虚假招聘平台以「入职培训」为名骗取保证金",
+                date: "2025-12-15",
+                desc: "有市民通过网上招聘平台应征兼职，却被要求先缴交「培训保证金」或「制服费」。警方提醒，正规招聘不会要求求职者预先付款。"
+            },
+            {
+                title: "【网购陷阱】假冒知名电商客服发送退款链接",
+                date: "2025-12-10",
+                desc: "骗子假冒电商客服，以「订单异常」为由发送退款链接，诱导用户点击钓鱼网站。警方呼吁市民切勿点击不明链接，应通过官方App查询订单状态。"
+            }
+        ];
+
+        list.innerHTML = "";
+
+        mockCases.forEach(caseItem => {
+            const item = document.createElement("div");
+            item.className = "hk01-case-item";
+            item.innerHTML = `
+                <div class="hk01-case-title">${caseItem.title}</div>
+                <div class="hk01-case-date">发布日期：${caseItem.date}</div>
+                <div class="hk01-case-desc">${caseItem.desc}</div>
+            `;
+            list.appendChild(item);
+        });
+
+        loader.style.display = 'none';
+        list.style.display = 'flex';
+
+        // 更新趋势图表
+        updateTrendChart();
+
+    }, 1500);
+}
+
+// 更新趋势图表
+function updateTrendChart() {
+    const ctx = document.getElementById('trendChart').getContext('2d');
+
+    // 模拟过去7天的诈骗案例数量
+    const dates = [];
+    const counts = [];
+
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - i);
+        dates.push(date.toLocaleDateString('zh-HK', { month: 'short', day: 'numeric' }));
+        counts.push(Math.floor(Math.random() * 10) + 3); // 3~12 条案例
+    }
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(45, 140, 240, 0.5)');
+    gradient.addColorStop(1, 'rgba(45, 140, 240, 0)');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dates,
+            datasets: [{
+                label: '诈骗案例数量',
+                data: counts,
+                borderColor: '#2d8cf0',
+                backgroundColor: gradient,
+                borderWidth: 3,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#2d8cf0',
+                pointRadius: 5,
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.7)',
+                    titleFont: { size: 14 },
+                    bodyFont: { size: 14 },
+                    padding: 12,
+                    cornerRadius: 10,
+                    displayColors: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(255,255,255,0.1)'
+                    },
+                    ticks: {
+                        color: 'rgba(255,255,255,0.7)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: 'rgba(255,255,255,0.7)'
+                    }
+                }
+            }
+        }
+    });
+}
+</script>
+
+</body>
+</html>

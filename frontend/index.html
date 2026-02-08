@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HK FraudGuard - 詐騙檢測系統</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="lang-switcher">
+                <button class="lang-btn active" data-lang="tc" onclick="switchLanguage('tc')">繁體中文</button>
+                <button class="lang-btn" data-lang="sc" onclick="switchLanguage('sc')">简体中文</button>
+                <button class="lang-btn" data-lang="en" onclick="switchLanguage('en')">English</button>
+            </div>
+            <h1>🛡️ HK FraudGuard</h1>
+            <p data-i18n="subtitle">香港詐騙檢測系統 | RAG-Based Fraud Detection</p>
+        </div>
+
+        <div class="content">
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchTab('text')" data-i18n="tab_text">📝 文字輸入</button>
+                <button class="tab-btn" onclick="switchTab('image')" data-i18n="tab_image">📷 圖片識別 (OCR)</button>
+            </div>
+
+            <!-- Text Input Tab -->
+            <div id="textTab" class="tab-content active">
+                <div class="input-section">
+                    <div class="section-title" data-i18n="input_title">輸入可疑短訊內容</div>
+                    <textarea
+                        id="smsInput"
+                        data-i18n-placeholder="input_placeholder"
+                        placeholder="請貼上或輸入可疑的短訊、電郵或對話內容..."
+                    ></textarea>
+                </div>
+
+                <div class="button-group"> 
+                    <button class="btn-secondary" onclick="clearText()" data-i18n="btn_clear">清空</button>
+                    <button class="btn-primary" onclick="analyzeText()" data-i18n="btn_analyze">🔍 分析詐騙風險</button>
+                </div>
+            </div>
+
+            <!-- Image Upload Tab -->
+            <div id="imageTab" class="tab-content">
+                <div class="input-section">
+                    <div class="section-title" data-i18n="upload_title">上傳截圖進行文字識別</div>
+                    <div class="upload-area" id="uploadArea" onclick="document.getElementById('imageInput').click()">
+                        <div class="upload-icon">📤</div>
+                        <div data-i18n="upload_text">點擊上傳或拖放圖片</div>
+                        <div style="font-size: 12px; color: #999; margin-top: 10px;" data-i18n="upload_formats">支援 JPG, PNG, JPEG 格式</div>
+                    </div>
+                    <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)">
+
+                    <div class="preview-container" id="previewContainer">
+                        <img id="previewImage" class="preview-image" alt="Preview">
+                    </div>
+
+                    <div id="ocrProgress" style="display: none;">
+                        <div class="spinner"></div>
+                        <div class="progress" id="progressText" data-i18n="ocr_progress">正在識別文字...</div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="clearImage()" data-i18n="btn_clear">清空</button>
+                    <button class="btn-primary" id="analyzeImageBtn" onclick="analyzeImage()" disabled data-i18n="btn_ocr_analyze">🔍 開始識別並分析</button>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="result-section" id="resultSection">
+                <div class="risk-score">
+                    <div class="risk-label" data-i18n="risk_label">詐騙風險評分</div>
+                    <div class="risk-value" id="riskScore">--</div>
+                </div>
+                <div class="reason-box">
+                    <div class="reason-title" data-i18n="result_title">📋 分析結果</div>
+                    <div class="reason-text" id="reasonText">--</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p data-i18n="footer_warning">⚠️ 本系統僅供參考，如遇可疑情況請致電警方防詐騙熱線 18222</p>
+            <p>Powered by DeepSeek-v3.2 &amp; RAG Technology</p>
+        </div>
+    </div>
+
+    <!-- Tesseract.js for client-side OCR (HK compliant, no external API) -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -10,9 +10,9 @@
     <div class="container">
         <div class="header">
             <div class="lang-switcher">
-                <button class="lang-btn active" data-lang="tc" onclick="switchLanguage('tc')">繁體中文</button>
-                <button class="lang-btn" data-lang="sc" onclick="switchLanguage('sc')">简体中文</button>
-                <button class="lang-btn" data-lang="en" onclick="switchLanguage('en')">English</button>
+                <button class="lang-btn active" onclick="switchLang('zh-hant')">繁體中文</button>
+                <button class="lang-btn" onclick="switchLang('zh-hans')">简体中文</button>
+                <button class="lang-btn" onclick="switchLang('en')">English</button>
             </div>
             <h1>🛡️ HK FraudGuard</h1>
             <p data-i18n="subtitle">香港詐騙檢測系統 | RAG-Based Fraud Detection</p>
@@ -20,24 +20,24 @@
 
         <div class="content">
             <div class="tab-buttons">
-                <button class="tab-btn active" onclick="switchTab('text')" data-i18n="tab_text">📝 文字輸入</button>
-                <button class="tab-btn" onclick="switchTab('image')" data-i18n="tab_image">📷 圖片識別 (OCR)</button>
+                <button class="tab-btn active" onclick="switchTab('text')">📝 <span data-i18n="tab_text">文字輸入</span></button>
+                <button class="tab-btn" onclick="switchTab('image')">📷 <span data-i18n="tab_ocr">圖片識別 (OCR)</span></button>
             </div>
 
             <!-- Text Input Tab -->
             <div id="textTab" class="tab-content active">
                 <div class="input-section">
                     <div class="section-title" data-i18n="input_title">輸入可疑短訊內容</div>
-                    <textarea
-                        id="smsInput"
+                    <textarea 
+                        id="smsInput" 
                         data-i18n-placeholder="input_placeholder"
                         placeholder="請貼上或輸入可疑的短訊、電郵或對話內容..."
                     ></textarea>
                 </div>
 
-                <div class="button-group"> 
-                    <button class="btn-secondary" onclick="clearText()" data-i18n="btn_clear">清空</button>
-                    <button class="btn-primary" onclick="analyzeText()" data-i18n="btn_analyze">🔍 分析詐騙風險</button>
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="clearText()"><span data-i18n="btn_clear">清空</span></button>
+                    <button class="btn-primary" id="analyzeTextBtn" onclick="analyzeText()">🔍 <span data-i18n="btn_analyze">分析詐騙風險</span></button>
                 </div>
             </div>
 
@@ -47,11 +47,11 @@
                     <div class="section-title" data-i18n="upload_title">上傳截圖進行文字識別</div>
                     <div class="upload-area" id="uploadArea" onclick="document.getElementById('imageInput').click()">
                         <div class="upload-icon">📤</div>
-                        <div data-i18n="upload_text">點擊上傳或拖放圖片</div>
-                        <div style="font-size: 12px; color: #999; margin-top: 10px;" data-i18n="upload_formats">支援 JPG, PNG, JPEG 格式</div>
+                        <div data-i18n="upload_prompt">點擊上傳或拖放圖片</div>
+                        <div class="upload-hint" data-i18n="upload_hint">支援 JPG, PNG, JPEG 格式</div>
                     </div>
                     <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)">
-
+                    
                     <div class="preview-container" id="previewContainer">
                         <img id="previewImage" class="preview-image" alt="Preview">
                     </div>
@@ -63,8 +63,8 @@
                 </div>
 
                 <div class="button-group">
-                    <button class="btn-secondary" onclick="clearImage()" data-i18n="btn_clear">清空</button>
-                    <button class="btn-primary" id="analyzeImageBtn" onclick="analyzeImage()" disabled data-i18n="btn_ocr_analyze">🔍 開始識別並分析</button>
+                    <button class="btn-secondary" onclick="clearImage()"><span data-i18n="btn_clear">清空</span></button>
+                    <button class="btn-primary" id="analyzeImageBtn" onclick="analyzeImage()" disabled>🔍 <span data-i18n="btn_ocr_analyze">開始識別並分析</span></button>
                 </div>
             </div>
 
@@ -75,7 +75,7 @@
                     <div class="risk-value" id="riskScore">--</div>
                 </div>
                 <div class="reason-box">
-                    <div class="reason-title" data-i18n="result_title">📋 分析結果</div>
+                    <div class="reason-title">📋 <span data-i18n="result_title">分析結果</span></div>
                     <div class="reason-text" id="reasonText">--</div>
                 </div>
             </div>

@@ -217,6 +217,24 @@ function displayResults(probability, reason, inputText) {
     riskScoreElement.className = 'risk-value ' +
         (percentage >= 70 ? 'risk-high' : percentage >= 40 ? 'risk-medium' : 'risk-low');
 
+    // Determine and display verdict label
+    const verdictElement = document.getElementById('verdictLabel');
+    let verdictKey, verdictClass;
+    
+    if (percentage < 40) {
+        verdictKey = 'verdict_safe';
+        verdictClass = 'verdict-safe';
+    } else if (percentage < 70) {
+        verdictKey = 'verdict_suspicious';
+        verdictClass = 'verdict-suspicious';
+    } else {
+        verdictKey = 'verdict_fraud';
+        verdictClass = 'verdict-fraud';
+    }
+    
+    verdictElement.textContent = t(verdictKey);
+    verdictElement.className = 'verdict-label ' + verdictClass;
+
     // Update reason text
     const truncatedText = inputText.length > 200
         ? inputText.substring(0, 200) + '...'

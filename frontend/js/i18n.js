@@ -32,7 +32,10 @@ const translations = {
         alert_file_type: '請上傳圖片檔案（JPG, PNG, JPEG）',
         alert_ocr_empty: '未能識別到文字內容，請嘗試上傳更清晰的圖片',
         alert_api_error: '分析失敗\n\n可能原因：\n1. 後端服務未啟動\n2. 網絡連接問題\n\n請檢查後端是否正在運行（python app.py）',
-        alert_ocr_error: '處理失敗\n\n可能原因：\n1. 圖片識別失敗\n2. 後端服務未啟動\n\n請檢查後端是否正在運行'
+        alert_ocr_error: '處理失敗\n\n可能原因：\n1. 圖片識別失敗\n2. 後端服務未啟動\n\n請檢查後端是否正在運行',
+        verdict_safe: '✅ 可能安全',
+        verdict_suspicious: '⚠️ 可疑',
+        verdict_fraud: '🚨 可能詐騙'
     },
     'zh-hans': {
         subtitle: '香港诈骗检测系统 | RAG-Based Fraud Detection',
@@ -62,7 +65,10 @@ const translations = {
         alert_file_type: '请上传图片文件（JPG, PNG, JPEG）',
         alert_ocr_empty: '未能识别到文字内容，请尝试上传更清晰的图片',
         alert_api_error: '分析失败\n\n可能原因：\n1. 后端服务未启动\n2. 网络连接问题\n\n请检查后端是否正在运行（python app.py）',
-        alert_ocr_error: '处理失败\n\n可能原因：\n1. 图片识别失败\n2. 后端服务未启动\n\n请检查后端是否正在运行'
+        alert_ocr_error: '处理失败\n\n可能原因：\n1. 图片识别失败\n2. 后端服务未启动\n\n请检查后端是否正在运行',
+        verdict_safe: '✅ 可能安全',
+        verdict_suspicious: '⚠️ 可疑',
+        verdict_fraud: '🚨 可能诈骗'
     },
     'en': {
         subtitle: 'Hong Kong Fraud Detection System | RAG-Based',
@@ -92,7 +98,10 @@ const translations = {
         alert_file_type: 'Please upload an image file (JPG, PNG, JPEG)',
         alert_ocr_empty: 'No text detected. Please try uploading a clearer image.',
         alert_api_error: 'Analysis failed\n\nPossible causes:\n1. Backend server is not running\n2. Network connection issue\n\nPlease check if the backend is running (python app.py)',
-        alert_ocr_error: 'Processing failed\n\nPossible causes:\n1. Image recognition failed\n2. Backend server is not running\n\nPlease check if the backend is running'
+        alert_ocr_error: 'Processing failed\n\nPossible causes:\n1. Image recognition failed\n2. Backend server is not running\n\nPlease check if the backend is running',
+        verdict_safe: '✅ Likely Safe',
+        verdict_suspicious: '⚠️ Suspicious',
+        verdict_fraud: '🚨 Likely Fraud'
     }
 };
 

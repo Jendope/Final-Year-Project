@@ -1,6 +1,12 @@
 .env
+env/
 venv/
+**/env/
+**/venv/
 __pycache__/
+**/__pycache__/
 *.pyc
 .DS_Store
 node_modules/
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
